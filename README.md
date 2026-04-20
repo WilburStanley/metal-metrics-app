@@ -16,10 +16,6 @@ A real-time precious metals dashboard displaying live spot prices, market data, 
 
 ---
 
-## Architecture
-
----
-
 ## Security
 
 - API keys stored as Vercel environment variables — never bundled into the client
@@ -116,8 +112,6 @@ All other times   → open
 ```
 
 The indicator updates on each page load when live metal prices are fetched.
-
----
 
 ---
 
