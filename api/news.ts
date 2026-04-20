@@ -2,11 +2,11 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const VALID_SYMBOLS = ['XAU', 'XAG', 'XCU', 'XPT'];
 
-const FINNHUB_CATEGORY: Record<string, string> = {
-  XAU: 'gold',
-  XAG: 'silver',
-  XCU: 'copper',
-  XPT: 'platinum',
+const METAL_QUERIES: Record<string, string> = {
+  XAU: 'gold price OR gold market OR gold trading',
+  XAG: 'silver price OR silver market OR silver trading',
+  XCU: 'copper price OR copper market OR copper trading',
+  XPT: 'platinum price OR platinum market OR platinum trading',
 };
 
 // Simple in-memory rate limiter per IP
@@ -58,43 +58,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid or missing symbol' });
   }
 
-  const keyword = FINNHUB_CATEGORY[symbol];
+  const query = METAL_QUERIES[symbol];
 
   try {
     const response = await fetch(
-      `https://finnhub.io/api/v1/news?category=general&token=${process.env.FINNHUB_KEY}`
+      `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&searchIn=title&sortBy=publishedAt&pageSize=12&language=en&apiKey=${process.env.NEWSAPI_KEY}`
     );
 
     if (!response.ok) {
       return res.status(response.status).json({ error: 'Upstream API error' });
     }
 
-    const data: any[] = await response.json();
-
-    // Filter by keyword in headline or summary
-    const filtered = data.filter((article) => {
-      const headline = article.headline?.toLowerCase() ?? '';
-      const summary = article.summary?.toLowerCase() ?? '';
-      const kw = keyword.toLowerCase();
-      return headline.includes(kw) || summary.includes(kw);
-    });
-
-    // Fall back to top general finance articles if no keyword matches
-    const final = filtered.length > 0 ? filtered.slice(0, 6) : data.slice(0, 6);
-
-    // Map Finnhub fields to match frontend's expected shape
-    const articles = final.map((article) => ({
-      source: { id: null, name: article.source },
-      author: null,
-      title: article.headline,
-      description: article.summary,
-      url: article.url,
-      urlToImage: article.image,
-      publishedAt: new Date(article.datetime * 1000).toISOString(),
-      content: article.summary,
-    }));
-
-    return res.status(200).json({ articles });
+    const data = await response.json();
+    return res.status(200).json(data);
   } catch {
     return res.status(500).json({ error: 'Internal server error' });
   }
