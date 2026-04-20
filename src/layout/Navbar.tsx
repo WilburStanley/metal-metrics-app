@@ -50,6 +50,7 @@ export const Navbar = () => {
             <Link
               key={link.path}
               to={link.path}
+              onClick={() => setOpen(false)}
               className={`block text-sm transition-colors px-4 ${
                 location.pathname === link.path
                   ? 'text-white'
