@@ -3,6 +3,7 @@ import { ExternalLink, Clock, User, Building2 } from 'lucide-react';
 import { fetchNews, type NewsItem } from '../services/newsService';
 import { type MetalData } from '../data/metals';
 import metalData from '../data/metals';
+import { ErrorCard } from '../components/ErrorCard.tsx';
 
 // Metal tab config
 const METAL_TABS = metalData.map((m) => ({
@@ -95,11 +96,7 @@ export const NewsPage = ({ activeMetal }: NewsPageProps) => {
           </div>
         )}
         {/* Error */}
-        {error && !loading && (
-          <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-6 text-center">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        )}
+        {error && !loading && <ErrorCard message={error} />}
         {/* News */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

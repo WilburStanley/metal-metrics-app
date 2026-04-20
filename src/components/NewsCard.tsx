@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type MetalData } from '../data/metals';
 import { fetchNews, type NewsItem } from '../services/newsService';
+import { ErrorCard } from './ErrorCard';
 
 interface NewsCardProps {
   metal: MetalData;
@@ -35,12 +36,7 @@ export const NewsCard = ({ metal }: NewsCardProps) => {
         <p className="text-xs text-surface-500 text-center py-4">Loading news...</p>
       )}
 
-      {error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-8 py-6 text-center w-full">
-          <p className="text-red-400 text-sm font-medium mb-1">Unavailable</p>
-          <p className="text-red-400/70 text-xs">{error}</p>
-        </div>
-      )}
+      {error && <ErrorCard message={error} />}
 
       {!loading && !error && (
         <div className="flex flex-col divide-y divide-white/10">
