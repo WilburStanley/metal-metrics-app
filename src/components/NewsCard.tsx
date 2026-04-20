@@ -44,12 +44,16 @@ export const NewsCard = ({ metal }: NewsCardProps) => {
 
       {!loading && !error && (
         <div className="flex flex-col divide-y divide-white/10">
-          {news.map((item) => (
-            <div key={item.id} className="py-3 first:pt-0 last:pb-0">
-              <p className="text-xs text-amber-500 mb-1">{item.timeAgo}</p>
-              <p className="text-sm text-white leading-snug">{item.headline}</p>
-            </div>
-          ))}
+          {news.length === 0 ? (
+            <p className="text-xs text-white/30 text-center py-4">No recent news available.</p>
+          ) : (
+            news.map((item) => (
+              <div key={item.id} className="py-3 first:pt-0 last:pb-0">
+                <p className="text-xs text-amber-500 mb-1">{item.timeAgo}</p>
+                <p className="text-sm text-white leading-snug">{item.headline}</p>
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>

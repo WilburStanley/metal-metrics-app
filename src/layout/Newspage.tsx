@@ -103,9 +103,16 @@ export const NewsPage = ({ activeMetal }: NewsPageProps) => {
         {/* News */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {news.map((item) => (
-              <NewsArticleCard key={item.id} item={item} />
-            ))}
+            {news.length === 0 ? (
+              <div className="col-span-3 rounded-lg bg-white/5 border border-white/10 p-10 text-center">
+                <p className="text-white/40 text-sm">No recent news found for {selectedMetal.name}.</p>
+                <p className="text-white/20 text-xs mt-1">Check back later or try another metal.</p>
+              </div>
+            ) : (
+              news.map((item) => (
+                <NewsArticleCard key={item.id} item={item} />
+              ))
+            )}
           </div>
         )}
       </div>
