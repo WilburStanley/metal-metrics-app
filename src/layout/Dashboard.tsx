@@ -40,7 +40,7 @@ export const Dashboard = ({
   activeMetal, setActiveMetal
 }: DashboardProps) => {
   const [metals, setMetals] = useState<MetalData[]>([]);
-  const [market, setMarket] = useState<boolean>(false);
+  const [market, setMarket] = useState<boolean>(isMarketOpen());
   const [marketLastUpdate, setMarketLastUpdate] = useState<Date>(new Date());
   const [error, setError] = useState<string | null>(null);
 
@@ -67,7 +67,7 @@ export const Dashboard = ({
         <div className="flex flex-col justify-start items-start md:flex-row md:justify-between md:items-center mt-1 gap-2 md:gap-0">
           <p className="text-surface-400 text-sm">Real-time spot prices and market analysis</p>
           <p className="text-sm flex items-center gap-2">
-            <span className={`inline-block w-1.5 h-1.5 rounded-full animate-pulse relative top-0.5 ${
+            <span className={`inline-block w-1.5 h-1.5 rounded-full animate-pulse relative ${
               market ? 'bg-green-500' : 'bg-red-500'
             }`} />
             <span className="text-surface-500">
