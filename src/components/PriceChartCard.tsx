@@ -54,7 +54,7 @@ export const PriceChartCard = ({ metal }: PriceChartCardProps) => {
             </span>
           </div>
           <div className="md:text-right">
-            <p className="text-2xl font-semibold text-center text-white tabular-nums tracking-tight">
+            <p className="text-2xl font-semibold text-start md:text-center text-white tabular-nums tracking-tight">
               ${currentPrice.toLocaleString()}
             </p>
             <p className={`text-sm mt-0.5 ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
