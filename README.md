@@ -4,6 +4,8 @@ A real-time precious metals dashboard displaying live spot prices, market data, 
 
 **Live Demo:** [metal-metrics.vercel.app](https://metal-metrics.vercel.app)
 
+![image alt](https://github.com/WilburStanley/metal-metrics-app/blob/6511f0dfc9f4bd948dc1082e3d3a385bfd379e46/public/metal-metrics-dashboard-img.jpg)
+
 ---
 
 ## Tech Stack
