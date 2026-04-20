@@ -15,7 +15,7 @@ export interface NewsItem {
 }
 
 const USE_MOCK = false;
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 // Map pair to symbol for the proxy route
 const PAIR_TO_SYMBOL: Record<string, string> = {

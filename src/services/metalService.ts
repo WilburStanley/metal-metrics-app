@@ -2,7 +2,7 @@ import { type MetalData } from '../data/metals';
 import metalData from '../data/metals';
 
 const USE_MOCK = true;
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 const SYMBOLS = ['XAU', 'XAG', 'XCU', 'XPT'] as const;
 
