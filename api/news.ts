@@ -71,16 +71,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const data: any[] = await response.json();
 
-    // Filter articles by keyword relevance
-    const filtered = data
-      .filter((article) => {
-        const text = `${article.headline} ${article.summary}`.toLowerCase();
-        return text.includes(keyword.toLowerCase());
-      })
-      .slice(0, 6);
+    // Filter by keyword in headline or summary
+    const filtered = data.filter((article) => {
+      const headline = article.headline?.toLowerCase() ?? '';
+      const summary = article.summary?.toLowerCase() ?? '';
+      const kw = keyword.toLowerCase();
+      return headline.includes(kw) || summary.includes(kw);
+    });
 
-    // Map Finnhub fields to match your frontend's expected shape
-    const articles = filtered.map((article) => ({
+    // Fall back to top general finance articles if no keyword matches
+    const final = filtered.length > 0 ? filtered.slice(0, 6) : data.slice(0, 6);
+
+    // Map Finnhub fields to match frontend's expected shape
+    const articles = final.map((article) => ({
       source: { id: null, name: article.source },
       author: null,
       title: article.headline,
