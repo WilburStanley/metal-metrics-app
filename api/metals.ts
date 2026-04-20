@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const VALID_SYMBOLS = ['XAU', 'XAG', 'XCU', 'XPT'];
+const VALID_SYMBOLS = ['XAU', 'XAG', 'XPD', 'XPT'];
 
 // Simple in-memory rate limiter per IP
 const requestLog = new Map<string, number[]>();
@@ -23,15 +23,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const origin = req.headers.origin ?? '';
   const allowedOrigins = [
     'http://localhost:5173',
-    'https://your-app.vercel.app', // replace with your Vercel domain
+    'https://metal-metrics.vercel.app',
   ];
 
-  if (!allowedOrigins.includes(origin)) {
+  if (origin && !allowedOrigins.includes(origin)) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
-  res.setHeader('Access-Control-Allow-Origin', origin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+  }
 
   // Rate limiting — 10 requests per hour per IP
   const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] ?? 'unknown';
@@ -56,7 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `https://www.goldapi.io/api/${symbol}/${currency}`,
       {
         headers: {
-          'x-access-token': process.env.GOLDAPI_KEY!, // server-side only
+          'x-access-token': process.env.GOLDAPI_KEY!,
           'Content-Type': 'application/json',
         },
       }

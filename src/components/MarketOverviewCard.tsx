@@ -17,7 +17,7 @@ const TREND_COLORS: Record<Trend, string> = {
 const MARKET_CAPS: Record<string, number> = {
   'XAU/USD': 15400, // Gold ~$15.4T
   'XAG/USD': 1800,  // Silver ~$1.8T
-  'XCU/USD': 210,   // Copper ~$210B
+  'XPD/USD': 15,    // Palladium ~$15B
   'XPT/USD': 140,   // Platinum ~$140B
 };
 

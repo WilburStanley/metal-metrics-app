@@ -1,11 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const VALID_SYMBOLS = ['XAU', 'XAG', 'XCU', 'XPT'];
+const VALID_SYMBOLS = ['XAU', 'XAG', 'XPD', 'XPT'];
 
 const METAL_QUERIES: Record<string, string> = {
   XAU: 'gold price OR gold market OR gold trading',
   XAG: 'silver price OR silver market OR silver trading',
-  XCU: 'copper price OR copper market OR copper trading',
+  XPD: 'palladium price OR palladium market OR palladium trading',
   XPT: 'platinum price OR platinum market OR platinum trading',
 };
 
@@ -25,12 +25,10 @@ const sanitize = (str: string): string =>
   str.replace(/[<>"'`;(){}]/g, '').trim().slice(0, 100);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Only allow GET
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // CORS — only allow your domain
   const origin = req.headers.origin ?? '';
   const allowedOrigins = [
     'http://localhost:3001',
@@ -46,13 +44,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Methods', 'GET');
   }
 
-  // Rate limiting — 20 requests per 15 min per IP
   const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] ?? 'unknown';
   if (isRateLimited(ip, 20, 15 * 60 * 1000)) {
     return res.status(429).json({ error: 'News rate limit exceeded. Please wait before retrying.' });
   }
 
-  // Validate symbol
   const symbol = sanitize((req.query.symbol as string) ?? '').toUpperCase();
   if (!VALID_SYMBOLS.includes(symbol)) {
     return res.status(400).json({ error: 'Invalid or missing symbol' });
