@@ -6,12 +6,14 @@ import { Navbar } from './layout/Navbar';
 import { Footer } from './layout/Footer';
 import { NewsPage } from './layout/Newspage';
 import { type MetalData } from './data/metals';
+import { ScrollToTop } from './components/ScrollToTop';
 
 const App = () => {
   const [activeMetal, setActiveMetal] = useState<MetalData | null>(null);
 
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <Navbar />
         <Routes>
           <Route path="/" element={<Dashboard activeMetal={activeMetal} setActiveMetal={setActiveMetal} />} />
