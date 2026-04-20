@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const origin = req.headers.origin ?? '';
   const allowedOrigins = [
     'http://localhost:5173',
-    'https://your-app.vercel.app', // replace with your Vercel domain
+    'https://metal-metrics.vercel.app',
   ];
 
   if (!allowedOrigins.includes(origin)) {
