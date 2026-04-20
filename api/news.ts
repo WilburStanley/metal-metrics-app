@@ -37,12 +37,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'https://metal-metrics.vercel.app',
   ];
 
-  if (!allowedOrigins.includes(origin)) {
+  // Allow requests with no origin (same-origin) or matching origin
+  if (origin && !allowedOrigins.includes(origin)) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
-  res.setHeader('Access-Control-Allow-Origin', origin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+  }
 
   // Rate limiting — 6 requests per 15 min per IP
   const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] ?? 'unknown';
@@ -60,7 +63,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&pageSize=6&language=en&apiKey=${process.env.NEWSAPI_KEY}` // ✅ server-side only
+      `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&pageSize=6&language=en&apiKey=${process.env.NEWSAPI_KEY}`
     );
 
     if (!response.ok) {
