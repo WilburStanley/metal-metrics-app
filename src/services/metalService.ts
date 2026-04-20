@@ -33,12 +33,18 @@ export const fetchMetals = async (): Promise<MetalData[]> => {
   );
 
   return results.map((data, i) => ({
-    ...metalData[i],       // keeps chartData and priceHistory from mock
+  ...metalData[i], // keeps chartData and priceHistory from mock
     id: i + 1,
     name: METAL_META[i].name,
     symbol: METAL_META[i].symbol,
     pair: METAL_META[i].pair,
     price: data.price,
     changePercent: data.chp,
+    // Real direction: open_price → current price
+    priceHistory: [
+      data.open_price,                                    // start
+      (data.open_price + data.price) / 2,                // midpoint
+      data.price,                                         // end
+    ],
   }));
 };
