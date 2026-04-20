@@ -2,11 +2,11 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const VALID_SYMBOLS = ['XAU', 'XAG', 'XCU', 'XPT'];
 
-const METAL_QUERIES: Record<string, string> = {
-  XAU: 'gold OR "gold price" OR "gold market"',
-  XAG: 'silver OR "silver price" OR "silver market"',
-  XCU: 'copper OR "copper price" OR "copper market"',
-  XPT: 'platinum OR "platinum price" OR "platinum market"',
+const FINNHUB_CATEGORY: Record<string, string> = {
+  XAU: 'gold',
+  XAG: 'silver',
+  XCU: 'copper',
+  XPT: 'platinum',
 };
 
 // Simple in-memory rate limiter per IP
@@ -37,7 +37,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'https://metal-metrics.vercel.app',
   ];
 
-  // Allow requests with no origin (same-origin) or matching origin
   if (origin && !allowedOrigins.includes(origin)) {
     return res.status(403).json({ error: 'Forbidden' });
   }
@@ -47,9 +46,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Methods', 'GET');
   }
 
-  // Rate limiting — 6 requests per 15 min per IP
+  // Rate limiting — 20 requests per 15 min per IP
   const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] ?? 'unknown';
-  if (isRateLimited(ip, 6, 15 * 60 * 1000)) {
+  if (isRateLimited(ip, 20, 15 * 60 * 1000)) {
     return res.status(429).json({ error: 'News rate limit exceeded. Please wait before retrying.' });
   }
 
@@ -59,19 +58,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid or missing symbol' });
   }
 
-  const query = METAL_QUERIES[symbol];
+  const keyword = FINNHUB_CATEGORY[symbol];
 
   try {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&pageSize=6&language=en&apiKey=${process.env.NEWSAPI_KEY}`
+      `https://finnhub.io/api/v1/news?category=general&token=${process.env.FINNHUB_KEY}`
     );
 
     if (!response.ok) {
       return res.status(response.status).json({ error: 'Upstream API error' });
     }
 
-    const data = await response.json();
-    return res.status(200).json(data);
+    const data: any[] = await response.json();
+
+    // Filter articles by keyword relevance
+    const filtered = data
+      .filter((article) => {
+        const text = `${article.headline} ${article.summary}`.toLowerCase();
+        return text.includes(keyword.toLowerCase());
+      })
+      .slice(0, 6);
+
+    // Map Finnhub fields to match your frontend's expected shape
+    const articles = filtered.map((article) => ({
+      source: { id: null, name: article.source },
+      author: null,
+      title: article.headline,
+      description: article.summary,
+      url: article.url,
+      urlToImage: article.image,
+      publishedAt: new Date(article.datetime * 1000).toISOString(),
+      content: article.summary,
+    }));
+
+    return res.status(200).json({ articles });
   } catch {
     return res.status(500).json({ error: 'Internal server error' });
   }
