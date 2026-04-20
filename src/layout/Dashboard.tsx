@@ -67,7 +67,9 @@ export const Dashboard = ({
         <div className="flex flex-col justify-start items-start md:flex-row md:justify-between md:items-center mt-1 gap-2 md:gap-0">
           <p className="text-surface-400 text-sm">Real-time spot prices and market analysis</p>
           <p className="text-sm flex items-center gap-2">
-            <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse relative" />
+            <span className={`inline-block w-1.5 h-1.5 rounded-full animate-pulse relative top-0.5 ${
+              market ? 'bg-green-500' : 'bg-red-500'
+            }`} />
             <span className="text-surface-500">
               {market ? 'Market Open' : 'Market Closed'}
               <span className="px-2">|</span>
