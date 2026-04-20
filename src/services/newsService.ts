@@ -21,7 +21,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 const PAIR_TO_SYMBOL: Record<string, string> = {
   'XAU/USD': 'XAU',
   'XAG/USD': 'XAG',
-  'XCU/USD': 'XCU',
+  'XPD/USD': 'XPD',
   'XPT/USD': 'XPT',
 };
 
