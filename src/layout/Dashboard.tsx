@@ -13,18 +13,43 @@ interface DashboardProps {
   setActiveMetal: Dispatch<SetStateAction<MetalData | null>>;
 }
 
+const isMarketOpen = (): boolean => {
+  const now = new Date();
+  const day = now.getUTCDay();    // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+  const hour = now.getUTCHours();
+  const minute = now.getUTCMinutes();
+  const timeUTC = hour * 60 + minute; // total minutes since midnight UTC
+
+  const OPEN  = 22 * 60;  // 22:00 UTC
+  const CLOSE = 22 * 60;  // 22:00 UTC (1 hour daily break)
+
+  // Saturday — always closed
+  if (day === 6) return false;
+
+  // Sunday — only open after 22:00 UTC
+  if (day === 0) return timeUTC >= OPEN;
+
+  // Friday — closed after 22:00 UTC
+  if (day === 5) return timeUTC < CLOSE;
+
+  // Monday–Thursday — open except 22:00–23:00 UTC daily break
+  return !(timeUTC >= 22 * 60 && timeUTC < 23 * 60);
+};
+
 export const Dashboard = ({
   activeMetal, setActiveMetal
 }: DashboardProps) => {
   const [metals, setMetals] = useState<MetalData[]>([]);
-  const [market] = useState<boolean>(true);
-  const [marketLastUpdate] = useState<Date>(new Date());
+  const [market, setMarket] = useState<boolean>(false);
+  const [marketLastUpdate, setMarketLastUpdate] = useState<Date>(new Date());
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMetals().then((data) => {
       setMetals(data);
       if (!activeMetal) setActiveMetal(data[0]);
+      setMarketLastUpdate(new Date()); // updates when data is fetched
+      setMarket(isMarketOpen());  
     })
     .catch(() => setError('Failed to load market data'));
   }, []);
